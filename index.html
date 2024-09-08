@@ -80,13 +80,17 @@
     }
 
     async function cargarLeaderboard() {
-        const tbody = document.querySelector('#leaderboard-table tbody');
-        tbody.innerHTML = '';
-        const leaderboard = await getLeaderboard();
-        leaderboard.sort((a, b) => b.score - a.score).forEach(item => {
-            tbody.innerHTML += `<tr><td>${item.name}</td><td>${item.score}</td></tr>`;
-        });
-    }
+    const tbody = document.querySelector('#leaderboard-table tbody');
+    tbody.innerHTML = ''; // Limpiar el contenido actual de la tabla
+    const leaderboard = await getLeaderboard(); // Obtener los datos
+    
+    console.log("Leaderboard cargado:", leaderboard); // Verifica qué datos se obtienen aquí
+
+    leaderboard.sort((a, b) => b.score - a.score).forEach(item => {
+        // Agregar cada usuario y puntuación a la tabla
+        tbody.innerHTML += `<tr><td>${item.name}</td><td>${item.score}</td></tr>`;
+    });
+}
 
     // Cargar el leaderboard al abrir la página
     cargarLeaderboard();
