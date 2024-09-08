@@ -29,7 +29,7 @@
         </table>
     </div>
     <script>
-    https://cors-anywhere.herokuapp.com/https://api.jsonbin.io/v3/b/66da1dfbad19ca34f8a08bc6';
+    const API_URL = 'https://cors-anywhere.herokuapp.com/https://api.jsonbin.io/v3/b/66da1dfbad19ca34f8a08bc6'; // URL del bin con CORS proxy
     const API_KEY = '$2a$10$ivgFX3qAKQo6GWGY2dcFme6a43n./HTVn1j.FmZfozSGhsvC/VGwe'; // Reemplaza con tu clave API
 
     // Enviar nueva puntuación
@@ -72,7 +72,7 @@
 
         if (response.ok) {
             const data = await response.json();
-            return data.leaderboard || [];
+            return data.record.leaderboard || []; // Ajuste para acceder a los datos
         } else {
             console.error('Error al obtener el leaderboard', await response.text());
             return [];
@@ -80,21 +80,21 @@
     }
 
     async function cargarLeaderboard() {
-    const tbody = document.querySelector('#leaderboard-table tbody');
-    tbody.innerHTML = ''; // Limpiar el contenido actual de la tabla
-    const leaderboard = await getLeaderboard(); // Obtener los datos
-    
-    console.log("Leaderboard cargado:", leaderboard); // Verifica qué datos se obtienen aquí
+        const tbody = document.querySelector('#leaderboard-table tbody');
+        tbody.innerHTML = ''; // Limpiar el contenido actual de la tabla
+        const leaderboard = await getLeaderboard(); // Obtener los datos
+        
+        console.log("Leaderboard cargado:", leaderboard); // Verifica qué datos se obtienen aquí
 
-    leaderboard.sort((a, b) => b.score - a.score).forEach(item => {
-        // Agregar cada usuario y puntuación a la tabla
-        tbody.innerHTML += `<tr><td>${item.name}</td><td>${item.score}</td></tr>`;
-    });
-}
+        leaderboard.sort((a, b) => b.score - a.score).forEach(item => {
+            // Agregar cada usuario y puntuación a la tabla
+            tbody.innerHTML += `<tr><td>${item.name}</td><td>${item.score}</td></tr>`;
+        });
+    }
 
     // Cargar el leaderboard al abrir la página
     cargarLeaderboard();
-</script>
+    </script>
 
 </body>
 </html>
