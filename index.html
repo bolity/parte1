@@ -29,54 +29,68 @@
         </table>
     </div>
     <script>
-        const API_URL = 'https://api.jsonbin.io/v3/b/66da1dfbad19ca34f8a08bc6'; // Reemplaza con tu bin ID
-        const API_KEY = '$2a$10$ivgFX3qAKQo6GWGY2dcFme6a43n./HTVn1j.FmZfozSGhsvC/VGwe'; // Reemplaza con tu clave API
+    const API_URL = 'https://api.jsonbin.io/v3/b/YOUR_BIN_ID'; // Reemplaza con tu bin ID
+    const API_KEY = 'YOUR_API_KEY'; // Reemplaza con tu clave API
 
-        // Enviar nueva puntuación
-        document.getElementById('score-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('username').value;
-            const score = document.getElementById('score').value;
+    // Enviar nueva puntuación
+    document.getElementById('score-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('username').value;
+        const score = document.getElementById('score').value;
 
-            await fetch(API_URL, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Master-Key': API_KEY
-                },
-                body: JSON.stringify({
-                    leaderboard: [
-                        ...await getLeaderboard(),
-                        { name: username, score: parseInt(score) }
-                    ]
-                })
-            });
+        // Obtener los datos actuales del leaderboard
+        const currentLeaderboard = await getLeaderboard();
 
-            cargarLeaderboard(); // Recargar la tabla
+        // Agregar la nueva puntuación
+        currentLeaderboard.push({ name: username, score: parseInt(score) });
+
+        // Enviar los datos actualizados al bin
+        const response = await fetch(API_URL, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Master-Key': API_KEY
+            },
+            body: JSON.stringify({ leaderboard: currentLeaderboard })
         });
 
-        // Cargar el leaderboard
-        async function getLeaderboard() {
-            const response = await fetch(API_URL, {
-                headers: {
-                    'X-Master-Key': API_KEY
-                }
-            });
+        if (response.ok) {
+            console.log('Puntuación guardada correctamente');
+            cargarLeaderboard(); // Recargar la tabla
+        } else {
+            console.error('Error al guardar la puntuación', await response.text());
+        }
+    });
+
+    // Obtener leaderboard
+    async function getLeaderboard() {
+        const response = await fetch(API_URL, {
+            headers: {
+                'X-Master-Key': API_KEY
+            }
+        });
+
+        if (response.ok) {
             const data = await response.json();
             return data.leaderboard || [];
+        } else {
+            console.error('Error al obtener el leaderboard', await response.text());
+            return [];
         }
+    }
 
-        async function cargarLeaderboard() {
-            const tbody = document.querySelector('#leaderboard-table tbody');
-            tbody.innerHTML = '';
-            const leaderboard = await getLeaderboard();
-            leaderboard.sort((a, b) => b.score - a.score).forEach(item => {
-                tbody.innerHTML += `<tr><td>${item.name}</td><td>${item.score}</td></tr>`;
-            });
-        }
+    async function cargarLeaderboard() {
+        const tbody = document.querySelector('#leaderboard-table tbody');
+        tbody.innerHTML = '';
+        const leaderboard = await getLeaderboard();
+        leaderboard.sort((a, b) => b.score - a.score).forEach(item => {
+            tbody.innerHTML += `<tr><td>${item.name}</td><td>${item.score}</td></tr>`;
+        });
+    }
 
-        // Cargar el leaderboard al abrir la página
-        cargarLeaderboard();
-    </script>
+    // Cargar el leaderboard al abrir la página
+    cargarLeaderboard();
+</script>
+
 </body>
 </html>
